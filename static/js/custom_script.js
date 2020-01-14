@@ -45,4 +45,139 @@ $(document).ready(function(){
     $(function() {
         bs_input_file();
     });
+
+    $('#importForm').submit( function(e){
+        e.preventDefault();
+        $.ajax({
+            url: base_url+'import_sales',
+            type: 'POST',
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function(data){
+                if(data && data.error == true){
+                    $('#msgBox').html(data.msg);
+                    $('#msgBox').addClass("alert-danger").removeClass("invisible");
+                }else{
+                    $('#msgBox').html(data.msg);
+                    $('#msgBox').addClass("alert-success").removeClass("invisible");
+                    $('#resetBtn').click();
+                }
+                setTimeout(function(){
+                    $('#msgBox').html('');
+                    $('#msgBox').removeClass("alert-success").removeClass("alert-danger").addClass("invisible");
+
+                },5000)
+            }
+        });
+        return false;
+    });
+
+    $('#product_name').typeahead({
+            source: function (query, process) {
+                return $.ajax({
+                    url: base_url+"get_data",
+                    type: 'post',
+                    data: {query: query,name:"product"},
+                    dataType: 'json',
+                    success: function (result) {
+                        var resultList = result.map(function (item) {
+                            return JSON.stringify(item);
+                        });
+                        return process(resultList);
+                    }
+                });
+            },
+        matcher: function (obj) {
+                $("input[name='product_id']").val("");
+                var item = JSON.parse(obj);
+                return ~item.name.toLowerCase().indexOf(this.query.toLowerCase())
+            },
+            sorter: function (items) {          
+               var beginswith = [], caseSensitive = [], caseInsensitive = [], item;
+                while (aItem = items.shift()) {
+                    var item = JSON.parse(aItem);
+                    if (!item.name.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(JSON.stringify(item));
+                    else if (~item.name.indexOf(this.query)) caseSensitive.push(JSON.stringify(item));
+                    else caseInsensitive.push(JSON.stringify(item));
+                }
+                return beginswith.concat(caseSensitive, caseInsensitive)
+            },
+            highlighter: function (obj) {
+                var item = JSON.parse(obj);
+                var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+                return item.name.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+                    return '<strong>' + match + '</strong>'
+                })
+            },
+            updater: function (obj) {
+                var item = JSON.parse(obj);
+                $("input[name='product_id']").val(item.id);
+                return item.name;
+            }
+        }).on('change',function(event){
+            if($("input[name='product_id']").val() == ""){
+                $('#product_name').val("");
+            }
+        });
+    $('#customer_name').typeahead({
+        source: function (query, process) {
+            return $.ajax({
+                url: base_url+"get_data",
+                type: 'post',
+                data: { query: query,name:"customer" },
+                dataType: 'json',
+                success: function (result) {
+                    var resultList = result.map(function (item) {
+                        return JSON.stringify(item);
+                    });
+                    return process(resultList);
+                }
+            });
+        },
+    matcher: function (obj) {
+            $("input[name='customer_id']").val("");
+            var item = JSON.parse(obj);
+            return ~item.name.toLowerCase().indexOf(this.query.toLowerCase())
+        },
+        sorter: function (items) {          
+            var beginswith = [], caseSensitive = [], caseInsensitive = [], item;
+            while (aItem = items.shift()) {
+                var item = JSON.parse(aItem);
+                if (!item.name.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(JSON.stringify(item));
+                else if (~item.name.indexOf(this.query)) caseSensitive.push(JSON.stringify(item));
+                else caseInsensitive.push(JSON.stringify(item));
+            }
+            return beginswith.concat(caseSensitive, caseInsensitive)
+        },
+        highlighter: function (obj) {
+            var item = JSON.parse(obj);
+            var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+            return item.name.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+                return '<strong>' + match + '</strong>'
+            })
+        },
+        updater: function (obj) {
+            console.log("updater",obj);
+            var item = JSON.parse(obj);
+            $("input[name='customer_id']").val(item.id);
+            return item.name;
+        }
+    }).on('change',function(event){
+        if($("input[name='customer_id']").val() == ""){
+            $('#product_name').val("");
+        }
+    });
 });
+
+$('#resetBtn').click(function(){
+    $('#frmSubmitBtn').prop('disabled', true);
+});
+
+function validateFile(file){
+    if(file)
+        $('#frmSubmitBtn').prop('disabled', false);
+    else
+        $('#frmSubmitBtn').prop('disabled', true);
+}
