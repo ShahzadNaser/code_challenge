@@ -34,4 +34,15 @@ class Customer_model extends CI_Model {
             ->get($this->tblcustomers)
             ->row_array();
     }
+	/**
+     * This function search customer by keywords and return data
+    */
+    public function search($select="*",$column,$keyword,$limit=20){
+        return $this->db->select($select)
+            ->from($this->tblcustomers)
+            ->like($column,$keyword)
+            ->limit($limit)
+            ->get()
+            ->result_array();
+    }
 }

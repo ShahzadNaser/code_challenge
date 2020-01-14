@@ -36,4 +36,15 @@ class Product_model extends CI_Model {
             ->get($this->tblproducts)
             ->row_array();
     }
+    /**
+     * This function search product by keywords and return data
+    */
+    public function search($select="*",$column,$keyword,$limit=20){
+        return $this->db->select($select)
+            ->from($this->tblproducts)
+            ->like($column,$keyword)
+            ->limit($limit)
+            ->get()
+            ->result_array();
+    }
 }
