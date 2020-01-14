@@ -1,6 +1,6 @@
 <?php $this->load->view('includes/header'); ?>
 <?php $this->load->view('includes/navbar'); ?>
     <div class="container">
-        test
+        <?php echo $content; ?>
     </div>
 <?php $this->load->view('includes/footer'); ?>
