@@ -10,13 +10,29 @@
             </tr>
         </thead>
         <tbody>
+            <?php
+                if(count($sales)>0){
+                    $total_price = 0;
+                    foreach($sales as $sale){
+                        $total_price = $total_price+$sale['price'];
+            ?>
+                <tr>
+                    <td><?= $sale['product_name'];?></td>
+                    <td><?= $sale['customer_name'];?></td>
+                    <td><?= $sale['customer_email'];?></td>
+                    <td><?= date('Y-m-d',strtotime($sale['created_at']));?></td>
+                    <td><?= $sale['price'];?></td>
+                </tr>
+            <?php } ?>
+                <tr>            
+                    <td colspan="4"><b>Total Price</b> </td>
+                    <td><b><?= $total_price;?></b></td>
+                </tr>
+            <?php }else{ ?>
             <tr>
-                <td>name></td>
-                <td>cusomer</td>
-                <td>email</td>
-                <td>date</td>
-                <td>price</td>
+                <td colspan="5" class="text-center">No Record Found.</td>
             </tr>
+            <?php }?>
         </tbody>
     </table>
 </div>
