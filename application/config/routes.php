@@ -54,3 +54,6 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['import']                = "Challenge/import";
+$route['apply_filters']         = "Challenge/apply_filters";
+$route['import_sales']          = "Challenge/import_sales";
+$route['get_data']              = "Challenge/get_data";
