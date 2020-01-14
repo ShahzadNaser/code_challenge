@@ -1,4 +1,21 @@
+const    spinner = '<i class="fa fa-circle-o-notch fa-spin mt-4" style="font-size:48px"></i>';
 $(document).ready(function(){
+    $('#searchFilters').on('submit',function(e){
+        e.preventDefault();
+        $.ajax({
+          url:base_url+"apply_filters",
+          type:"Post",
+          data: $(this).serialize(),
+          dataType:"html",
+          beforeSend:function(){
+              $('#tbl-holder').html(spinner);
+          },
+          success:function(response){
+            $('#tbl-holder').html(response);
+          }
+        });
+        return false;
+    });
     function bs_input_file() {
         $(".input-file").before(
             function() {
